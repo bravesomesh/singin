@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', express.static(__dirname+'/public'));
 
 // user's api
-app.post('/addUser', auth.authenticate, user.verifyUser, user.addUser);
+app.post('/addUser', user.addUser);
 app.post('/login', user.login);
 
 http.listen(app.get('port'), function() {

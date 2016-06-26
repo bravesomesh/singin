@@ -38,7 +38,6 @@ exports.addUser = function(request, response) {
     var password = request.body.password;
 	password = crypto.createHash('md5').update(password).digest("hex");
     var date = new Date();
-
     MongoClient.connect(url, function(err, database) {
         if (err) {
             console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -50,11 +49,13 @@ exports.addUser = function(request, response) {
             db.collection('users', function(err, collection) {
                 collection.insert({'email':email, 'password':password, 'insertedAt':date}, function(err, result) {
                     if (err) {
-                        console.log('an error has occured');
+                        response.send({"data":"", "error":"An Error has occured","errorCode":3});
                     } else {
-                        console.log('Success: ' + JSON.stringify(result));
+                        var token = jwt.sign({'email': email, 'password': password}, config.secret, {
+                                  expiresIn: 345600 // expires in 4 days
+                                });
+                        response.send({"data":"Registered successfully","error":"","errorCode":0,"token": token});
                     }
-                    response.send(200);
                 });
             });
         }
